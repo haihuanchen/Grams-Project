@@ -13,6 +13,7 @@
   width: auto;
   border-bottom: 1px solid lightgray;
   padding: 20px;
+  max-width: 100px;
 }
 
 /* .app-header {
