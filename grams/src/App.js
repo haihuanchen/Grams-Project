@@ -1,10 +1,43 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
-import Post from './Post'
-import  {db} from './firebase'
+import Post from './Post';
+import  {db, auth} from './firebase';
+import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
+import { Button, Input } from '@material-ui/core';
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
 
 function App() {
+  const classes = useStyles();
+  const [modalStyle] = useState(getModalStyle);
+
   const [posts, setPosts] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState(null);
 
   useEffect(()=> {
     db.collection('posts').onSnapshot(snapshot => {
@@ -15,16 +48,79 @@ function App() {
     })
   }, []);
 
+  useEffect(()=> {
+    const unsub = auth.onAuthStateChanged((authUser)=>{
+      if (authUser){
+        //user has logged in
+        setUser(authUser);
+      }else{
+        //user has logged out
+        setUser(null);
+      }
+    })
+
+    return () => {
+      //perform cleanup actions
+      unsub();
+    }
+
+  },[user, username])
+
+  const signUp = (e) => {
+    e.preventDefault();
+    auth.createUserWithEmailAndPassword(email, password)
+    .then((authUser)=>{
+      return authUser.user.updateProfile({
+        displayName: username
+      })
+    })
+    .catch((error) => alert(error.message));
+  }
+
   return (
     <div className='app'>
+      <Modal open={open} onClose={()=> setOpen(false)}>
+        <div style={modalStyle} className={classes.paper}>
+          <form className='app-signup'>
+            <center>
+              <img 
+                className='header-image' 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
+                alt="instagram header"
+              />
+            </center>
+            <Input 
+              placeholder='username'
+              type='text'
+              value={username}
+              onChange={(e)=>setUsername(e.target.value)}
+            />
+            <Input 
+              placeholder='email'
+              type='text'
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+            />
+            <Input 
+              placeholder='password'
+              type='password'
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+            />
+            <Button onClick={signUp}>Submit</Button>
+          </form>
+        </div>
+      </Modal>
 
       <div className='app-header'>
         <img 
           className='header-image' 
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
           alt="instagram header"
-          />
+        />
       </div>
+
+      <Button onClick={()=>setOpen(true)}>Sign Up</Button>
       
       <h1>Welcome to Grams App</h1>
 
