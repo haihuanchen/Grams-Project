@@ -34,6 +34,7 @@ function App() {
 
   const [posts, setPosts] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openSignIn, setOpenSignIn] = useState(false);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -77,11 +78,16 @@ function App() {
     .catch((error) => alert(error.message));
   }
 
+  const signIn = (e) => {
+    e.preventDefault();
+    auth.signInWithEmailAndPassword(email, password)
+  }
+
   return (
     <div className='app'>
       <Modal open={open} onClose={()=> setOpen(false)}>
         <div style={modalStyle} className={classes.paper}>
-          <form className='app-signup'>
+          <form className='app-signup' onSubmit={signUp}>
             <center>
               <img 
                 className='header-image' 
@@ -107,7 +113,34 @@ function App() {
               value={password}
               onChange={(e)=>setPassword(e.target.value)}
             />
-            <Button onClick={signUp}>Submit</Button>
+            <Button type='submit'>Sign Up</Button>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal open={openSignIn} onClose={()=> setOpenSignIn(false)}>
+        <div style={modalStyle} className={classes.paper}>
+          <form className='app-signup' onSubmit={signIn}>
+            <center>
+              <img 
+                className='header-image' 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
+                alt="instagram header"
+              />
+            </center>
+            <Input 
+              placeholder='email'
+              type='text'
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+            />
+            <Input 
+              placeholder='password'
+              type='password'
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+            />
+            <Button type='submit'>Sign In</Button>
           </form>
         </div>
       </Modal>
@@ -120,7 +153,15 @@ function App() {
         />
       </div>
 
-      <Button onClick={()=>setOpen(true)}>Sign Up</Button>
+      {user ? (
+        <Button onClick={()=>auth.signOut()}>Log Out</Button>
+      ): (
+        <div className='app-loginContainer'>
+          <Button onClick={()=>setOpenSignIn(true)}>Sign In</Button>
+          <Button onClick={()=>setOpen(true)}>Sign Up</Button>
+        </div>
+      )}
+
       
       <h1>Welcome to Grams App</h1>
 
