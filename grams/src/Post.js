@@ -16,7 +16,7 @@ function Post({ username, caption, imgUrl }) {
 
             <img 
                 className='post-img'
-                src="https://static.vecteezy.com/system/resources/thumbnails/000/273/915/original/ocean-background.jpg" 
+                src={imgUrl} 
                 alt=""
             />
 
