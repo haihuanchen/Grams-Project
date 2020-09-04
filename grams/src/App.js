@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
 import Post from './Post';
-import  {db, auth} from './firebase';
+import {db, auth} from './firebase';
 import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Input } from '@material-ui/core';
@@ -172,7 +172,7 @@ function App() {
       <div className='app-posts'>
         <div className="app-postsLeft">
           {posts.map(({id, post})=> (
-            <Post key={id} username={post.username} caption={post.caption} imgUrl={post.imgUrl} />
+            <Post key={id} postId={id} username={post.username} caption={post.caption} imgUrl={post.imgUrl} />
           ))}
         </div>
         <div className="app-postsRight">
