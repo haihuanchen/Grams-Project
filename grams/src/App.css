@@ -6,17 +6,33 @@
   background-color: #fafafa;
 }
 
-.header-image {
+.app-header {
+  border-bottom: 1px solid lightgray;
   background-color: white;
+  object-fit: contain;
+  display: flex;
+  padding: 20px;
+  justify-content: space-between;
+}
+
+.header-image {
   object-fit: contain;
   height: 50px;
   width: auto;
-  border-bottom: 1px solid lightgray;
-  padding: 20px;
   max-width: 100px;
 }
 
 .app-signup {
   display: flex;
   flex-direction: column;
+}
+
+.app-posts {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.app-postsRight {
+  margin-left: 20px;
 }

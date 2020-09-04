@@ -5,7 +5,8 @@ import  {db, auth} from './firebase';
 import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Input } from '@material-ui/core';
-import ImageUpload from './ImageUpload'
+import ImageUpload from './ImageUpload';
+import InstagramEmbed from 'react-instagram-embed';
 
 function getModalStyle() {
   const top = 50;
@@ -42,7 +43,7 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(()=> {
-    db.collection('posts').onSnapshot(snapshot => {
+    db.collection('posts').orderBy('timestamp','desc').onSnapshot(snapshot => {
       setPosts(snapshot.docs.map(doc => ({
         id: doc.id,
         post: doc.data()
@@ -89,13 +90,6 @@ function App() {
 
   return (
     <div className='app'>
-      
-      {user?.displayName ? (
-        <ImageUpload username={user.displayName} />
-      ): (
-        <h3>Please login to upload</h3>
-      )}
-
       <Modal open={open} onClose={()=> setOpen(false)}>
         <div style={modalStyle} className={classes.paper}>
           <form className='app-signup' onSubmit={signUp}>
@@ -162,23 +156,46 @@ function App() {
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
           alt="instagram header"
         />
+        {user ? (
+          <div>
+            <h5>Welcome, {user.displayName}</h5>
+            <Button Button onClick={()=>auth.signOut()}>Log Out</Button>
+          </div>
+        ): (
+          <div className='app-loginContainer'>
+            <Button onClick={()=>setOpenSignIn(true)}>Sign In</Button>
+            <Button onClick={()=>setOpen(true)}>Sign Up</Button>
+          </div>
+        )}
       </div>
 
-      {user ? (
-        <Button onClick={()=>auth.signOut()}>Log Out</Button>
-      ): (
-        <div className='app-loginContainer'>
-          <Button onClick={()=>setOpenSignIn(true)}>Sign In</Button>
-          <Button onClick={()=>setOpen(true)}>Sign Up</Button>
+      <div className='app-posts'>
+        <div className="app-postsLeft">
+          {posts.map(({id, post})=> (
+            <Post key={id} username={post.username} caption={post.caption} imgUrl={post.imgUrl} />
+          ))}
         </div>
+        <div className="app-postsRight">
+          <InstagramEmbed
+            url='https://www.instagram.com/p/BuEy4pBgGkJ/'
+            maxWidth={320}
+            hideCaption={false}
+            containerTagName='div'
+            protocol=''
+            injectScript
+            onLoading={() => {}}
+            onSuccess={() => {}}
+            onAfterRender={() => {}}
+            onFailure={() => {}}
+          />
+        </div>
+      </div>
+
+      {user?.displayName ? (
+        <ImageUpload username={user.displayName} />
+      ): (
+        <h3>Please login to upload</h3>
       )}
-
-      
-      <h1>Welcome to Grams App</h1>
-
-      {posts.map(({id, post})=> (
-        <Post key={id} username={post.username} caption={post.caption} imgUrl={post.imgUrl} />
-      ))}
     </div>
   )
 }
