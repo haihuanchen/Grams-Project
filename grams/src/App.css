@@ -7,6 +7,8 @@
 }
 
 .app-header {
+  position: sticky;
+  top: 0;
   border-bottom: 1px solid lightgray;
   background-color: white;
   object-fit: contain;
